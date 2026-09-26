@@ -1,0 +1,6 @@
+{
+  "name": "FreshCart - Grocery Ordering",
+  "description": "A clean, lightweight, mobile-first grocery ordering web app with Supabase PostgreSQL database, category filtering, search, dynamic cart, and WhatsApp order dispatch.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

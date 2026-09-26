@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>FreshCart - Mobile Grocery Store</title>
+  <meta name="description" content="Order fresh vegetables, fruits, groceries and daily essentials with fast delivery." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- 1. Header (Section 5) -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="#" class="brand">
+        <span class="brand-icon">🛒</span>
+        <span>Fresh<span class="accent">Cart</span></span>
+      </a>
+      <button class="header-cart-btn trigger-cart" aria-label="Open shopping cart">
+        <span>🛍️</span>
+        <span class="cart-badge cart-badge-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 2. Product Search Bar (Section 8) -->
+  <div class="search-container">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search fresh vegetables, fruits, groceries..." autocomplete="off" />
+    </div>
+  </div>
+
+  <!-- 3. Category Horizontal Section (Section 6) -->
+  <section class="category-section" id="categoriesSection">
+    <div class="category-scroll" id="categoryContainer">
+      <!-- Loaded dynamically via loadCategories() -->
+      <button class="category-btn active" data-id="all">
+        <span>🛍️ All</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- 4. Products Section (Section 7 & 20) -->
+  <main class="main-content">
+    <div class="section-header">
+      <h2 class="section-title">Fresh Arrivals</h2>
+      <span class="product-count" id="productCount">Loading...</span>
+    </div>
+
+    <!-- Loading & Error States -->
+    <div id="loadingState" class="state-banner state-loading" style="display: none;">
+      Loading fresh grocery products...
+    </div>
+    <div id="errorState" class="state-banner state-error" style="display: none;"></div>
+
+    <!-- Product Grid (Mobile: 2 cols, Tablet: 3 cols, Desktop: 4 cols) -->
+    <div class="product-grid" id="productGrid">
+      <!-- Dynamic cards rendered by displayProducts() -->
+    </div>
+  </main>
+
+  <!-- 5. Cart Bottom Sheet / Modal (Sections 11, 12, 13, 14, 15, 16) -->
+  <div class="modal-overlay" id="cartModalOverlay">
+    <div class="cart-modal">
+      <div class="cart-header">
+        <h3><span>🛍️</span> Your Grocery Basket</h3>
+        <button class="btn-close" id="closeCartBtn" aria-label="Close cart">✕</button>
+      </div>
+
+      <div class="cart-body">
+        <!-- Cart Items List -->
+        <div class="cart-items-list" id="cartItemsList">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Price Summary (Section 13) -->
+        <div class="cart-summary" id="cartSummaryContent" style="display: none;">
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="calcSubtotal">৳0</span>
+          </div>
+          <div class="summary-row">
+            <span>Delivery Charge</span>
+            <span id="calcDelivery">৳0</span>
+          </div>
+          <div class="summary-row total-row">
+            <span>TOTAL</span>
+            <span class="total-amount" id="calcTotal">৳0</span>
+          </div>
+        </div>
+
+        <!-- Customer Details Form (Section 14) -->
+        <div id="customerFormWrapper" style="display: none;">
+          <form class="customer-form" id="checkoutForm" onsubmit="return false;">
+            <div class="form-group">
+              <label class="form-label" for="custName">Customer Name <span class="req">*</span></label>
+              <input type="text" id="custName" class="form-input" placeholder="e.g. Rahim Ahmed" required />
+              <span class="form-error" id="nameError"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="custPhone">Phone Number <span class="req">*</span></label>
+              <input type="tel" id="custPhone" class="form-input" placeholder="e.g. 01712345678" required />
+              <span class="form-error" id="phoneError"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="custAddress">Delivery Address <span class="req">*</span></label>
+              <textarea id="custAddress" class="form-textarea" rows="2" placeholder="House, Road, Area (e.g. Dhanmondi, Dhaka)" required></textarea>
+              <span class="form-error" id="addressError"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="custNote">Order Note (Optional)</label>
+              <input type="text" id="custNote" class="form-input" placeholder="e.g. Please deliver in the evening" />
+            </div>
+
+            <!-- WhatsApp Checkout Button (Section 15, 16) -->
+            <button type="button" class="btn-whatsapp-order" id="sendWhatsAppBtn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.698.077-2.228-.553-1.849-.764-3.033-2.637-3.125-2.76-.093-.123-.746-.992-.746-1.893 0-.901.472-1.343.64-1.525.168-.182.368-.228.491-.228.123 0 .246.001.353.007.113.006.264-.043.414.318.155.372.532 1.298.579 1.393.047.095.078.207.016.33-.062.123-.093.2-.185.308-.093.108-.195.24-.279.323-.093.093-.19.194-.082.38.108.186.481.794 1.033 1.286.711.634 1.311.83 1.497.923.186.093.294.078.402-.046.108-.124.463-.538.587-.723.123-.185.247-.154.415-.092.169.062 1.066.503 1.25.595.185.093.308.139.354.216.046.077.046.447-.098.852z"/>
+              </svg>
+              <span>Send Order on WhatsApp</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Mobile Fixed Bottom Navigation (Section 21) -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+      <span style="font-size: 1.2rem;">🏠</span>
+      <span>Home</span>
+    </button>
+    <button class="nav-item" onclick="document.getElementById('categoriesSection').scrollIntoView({behavior: 'smooth'})">
+      <span style="font-size: 1.2rem;">📂</span>
+      <span>Categories</span>
+    </button>
+    <button class="nav-item trigger-cart">
+      <span style="font-size: 1.2rem;">🛍️</span>
+      <span>Cart</span>
+      <span class="nav-badge cart-badge-count">0</span>
+    </button>
+  </nav>
+
+  <!-- 7. Lightweight Toast Alert (Section 10) -->
+  <div class="toast" id="toast">Added to cart</div>
+
+  <!-- Supabase JS Client & App Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
